@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+import { sql } from '@vercel/postgres';
 import {
   CustomerField,
   CustomersTableType,
@@ -9,16 +9,6 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'nextjs',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
-
 export async function fetchRevenue() {
   try {
     // Artificially delay a response for demo purposes.
@@ -27,13 +17,11 @@ export async function fetchRevenue() {
     // console.log('Fetching revenue data...');
     // await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    // const data = await sql<Revenue>`SELECT * FROM revenue`;
-    const [Revenue] = await pool.query('SELECT * FROM revenue');
+    const data = await sql<Revenue>`SELECT * FROM revenue`;
 
     // console.log('Data fetch completed after 3 seconds.');
 
-    // return data.rows;
-    return Revenue;
+    return data.rows;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch revenue data.');
